@@ -29,7 +29,6 @@ devops-basics-2/
 │   ├── styles.css                     # wygląd, także sticky topbar/hero
 │   ├── app.js                         # renderer dwóch trybów
 │   ├── .nojekyll
-│   ├── assets/images/                # lokalne pliki graficzne
 │   └── content/
 │       ├── site.json                  # lista zakładek głównych
 │       ├── lokalnie/                  # json-html
@@ -40,7 +39,12 @@ devops-basics-2/
 │           └── sections/
 │               ├── sekcja-01.json
 │               ├── sekcja-02.json
-│               └── sekcja-03.json
+│               ├── sekcja-03.json
+│               └── images/             # grafiki tylko tej zakładki
+│                   ├── architektura.jpg
+│                   ├── cykl-pracy.jpg
+│                   ├── github-actions.jpg
+│                   └── json-image.jpg
 ├── scripts/
 │   ├── validate.py                    # sprawdza JSON i pliki obrazów
 │   └── build.py                       # kopiuje public/ do dist/
@@ -71,7 +75,7 @@ Adres: http://localhost:8000. Nie uruchamiaj przez `file://`, bo aplikacja używ
 
 ## Jak dodać nową grafikę (JSON-IMAGE)?
 
-1. Wstaw np. `moja-instrukcja.jpg` do `public/assets/images/`.
+1. Wstaw np. `moja-instrukcja.jpg` do `public/content/diagramy/sections/images/`.
 2. Edytuj `public/content/diagramy/sections/sekcja-01.json` w Notepad++ lub VS Code.
 3. Dopisz obiekt do listy `images`:
 
@@ -79,18 +83,18 @@ Adres: http://localhost:8000. Nie uruchamiaj przez `file://`, bo aplikacja używ
 {
   "id": "moja-instrukcja",
   "title": "Moja instrukcja",
-  "src": "assets/images/moja-instrukcja.jpg",
+  "src": "content/diagramy/sections/images/moja-instrukcja.jpg",
   "alt": "Opis obrazka dla osób niewidomych",
   "description": "Krótki opis widoczny nad grafiką",
   "caption": "Opcjonalny podpis pod ilustracją"
 }
 ```
 
-Nie trzeba zmieniać `app.js` ani `index.html`. Każda dodana grafika staje się nową pozycją menu bocznego; po kliknięciu pokazywany jest **tylko wybrany obraz**. Wartość `src` jest ścieżką od katalogu `public/`, bez ukośnika na początku (np. `assets/images/plik.jpg`). Unikaj spacji i polskich liter w nazwach samych plików. Pliki obrazów mogą być dowolnej orientacji — dopasowanie rozmiaru realizuje CSS.
+Nie trzeba zmieniać `app.js` ani `index.html`. Każda dodana grafika staje się nową pozycją menu bocznego; po kliknięciu pokazywany jest **tylko wybrany obraz**. Wartość `src` jest ścieżką od katalogu `public/`, bez ukośnika na początku, a obrazy muszą należeć do folderu `content/ID_ZAKLADKI/sections/images/` (np. `content/diagramy/sections/images/plik.jpg`). Unikaj spacji i polskich liter w nazwach samych plików. Pliki obrazów mogą być dowolnej orientacji — dopasowanie rozmiaru realizuje CSS.
 
 Aby dodać **nową sekcję obrazów**, utwórz plik `sections/sekcja-04.json` na wzór istniejących i dopisz `"sections/sekcja-04.json"` do tablicy `sections` w `content/diagramy/page.json`.
 
-Aby dodać **nową zakładkę** trybu `json-image`, utwórz jej `page.json` oraz `sections/*.json`, a następnie dodaj wpis w `public/content/site.json`.
+Aby dodać **nową zakładkę** trybu `json-image`, utwórz jej `page.json`, `sections/*.json` oraz osobny katalog `sections/images/`, a następnie dodaj wpis w `public/content/site.json`. Walidator wymaga, aby grafiki każdej zakładki znajdowały się we własnym katalogu, np. `public/content/instrukcje/sections/images/`.
 
 Pełne schematy i przykłady: [docs/FORMATY-TRESCI.md](docs/FORMATY-TRESCI.md).
 

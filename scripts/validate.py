@@ -85,6 +85,14 @@ def check():
                     valid_text(pic.get('alt'), f'{sid}/{image_id}.alt')
                     src = pic.get('src')
                     valid_text(src, f'{sid}/{image_id}.src')
+                    # Obrazy danej zakładki muszą leżeć tylko w jej katalogu sections/images/.
+                    # Nie akceptujemy odwołań do innych zakładek ani katalogów współdzielonych.
+                    expected = Path('content') / pid / 'sections' / 'images'
+                    src_path = Path(src)
+                    if src_path.is_absolute() or src_path.parent != expected:
+                        raise ValueError(
+                            f'{pid}/{sid}/{image_id}: src musi wskazywać plik w {expected}/'
+                        )
                     safe_file(src, IMAGE_EXTS)
                     image_count += 1
     if site.get('defaultPage') not in page_ids:

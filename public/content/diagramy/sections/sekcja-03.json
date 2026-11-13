@@ -6,7 +6,7 @@
     {
       "id": "model",
       "title": "Jak działa JSON-IMAGE",
-      "src": "assets/images/json-image.jpg",
+      "src": "content/diagramy/sections/images/json-image.jpg",
       "alt": "Schemat powiązania plików page.json, sekcji JSON i grafik JPG",
       "description": "Każda pozycja menu wskazuje obraz opisany w sekcji JSON."
     }

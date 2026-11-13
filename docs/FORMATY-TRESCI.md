@@ -76,7 +76,7 @@ Widok: wszystkie sekcje są umieszczone na stronie jedna pod drugą; spis treśc
     {
       "id":"schemat-1",
       "title":"Schemat systemu",
-      "src":"assets/images/schemat-1.jpg",
+      "src":"content/diagramy/sections/images/schemat-1.jpg",
       "alt":"Opis zawartości diagramu",
       "description":"Tekst nad obrazkiem",
       "caption":"Tekst pod obrazkiem"
@@ -84,18 +84,42 @@ Widok: wszystkie sekcje są umieszczone na stronie jedna pod drugą; spis treśc
     {
       "id":"schemat-2",
       "title":"Drugi schemat",
-      "src":"assets/images/schemat-2.png",
+      "src":"content/diagramy/sections/images/schemat-2.png",
       "alt":"Opis drugiego diagramu"
     }
   ]
 }
 ```
 
-**Wymagane** w obrazie: `id`, `title`, `src`, `alt`. **Opcjonalne**: `description`, `caption`. Plik musi istnieć fizycznie w `public/` i mieć rozszerzenie `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif` lub `.svg`.
+**Wymagane** w obrazie: `id`, `title`, `src`, `alt`. **Opcjonalne**: `description`, `caption`. Plik musi istnieć fizycznie w `public/content/NAZWA_ZAKLADKI/sections/images/` i mieć rozszerzenie `.jpg`, `.jpeg`, `.png`, `.webp`, `.gif` lub `.svg`.
 
 Widok: menu boczne pokazuje pogrupowane tytuły grafik; kliknięcie w grafikę zmienia pojedynczy widok w prawej części. Aktywny obraz ma własny adres `#/ID_STRONY/ID_SEKCJI/ID_OBRAZU`.
 
-## 5. Wskazówki
+## 5. Organizacja obrazów w katalogach zakładek
+
+Każda zakładka typu `json-image` przechowuje **swoje** grafiki w katalogu `public/content/NAZWA_ZAKLADKI/sections/images/` (wspólnym dla sekcji wewnątrz tej zakładki). Przykładowo:
+
+```text
+public/content/
+├── diagramy/
+│   ├── page.json
+│   └── sections/
+│       ├── sekcja-01.json
+│       ├── sekcja-02.json
+│       └── images/
+│           ├── architektura.jpg
+│           └── github-actions.jpg
+└── instrukcje/
+    ├── page.json
+    └── sections/
+        ├── sekcja-01.json
+        └── images/
+            └── krok-1.png
+```
+
+W polu `src` wpisz **pełną ścieżkę względem katalogu `public/`**, np. `content/diagramy/sections/images/architektura.jpg`. Nie wpisuj wyłącznie `images/architektura.jpg`. Walidator odrzuci obrazy odwołujące się do katalogu innej zakładki.
+
+## 6. Wskazówki
 
 - Dla własnych obrazów stosuj krótkie, stabilne nazwy, np. `deploy-01.jpg`.
 - Unikaj bardzo ciężkich plików — dla zdjęć zwykle wystarcza JPEG lub WebP; dla zrzutów ekranu PNG lub WebP.

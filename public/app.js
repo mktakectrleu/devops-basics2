@@ -95,7 +95,8 @@ function renderSection(data){
   return sec;
 }
 // Tryb JSON-IMAGE: menu sekcji i obrazów steruje jednym widokiem po prawej.
-// Ścieżki obrazów są względne do public/, nigdy nie wstawiamy HTML z danych JSON.
+// Obrazy zakładek: content/<id-zakladki>/sections/images/<plik>.
+// Ścieżki src są względne do public/, nigdy nie wstawiamy HTML z danych JSON.
 function imageRouteKey(sectionId,imageId){return `${sectionId}/${imageId}`;}
 function flattenImages(data){return data.flatMap(sec=>(sec.images||[]).map(pic=>({section:sec,image:pic,key:imageRouteKey(sec.id,pic.id)})));}
 function renderImageSideNav(data){

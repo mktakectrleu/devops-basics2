@@ -28,7 +28,28 @@ class ProjectTests(unittest.TestCase):
     def test_image_files_present(self):
         section = read_json('content/diagramy/sections/sekcja-01.json')
         for pic in section['images']:
+            self.assertTrue(pic['src'].startswith('content/diagramy/sections/images/'))
             self.assertTrue(safe_file(pic['src'], IMAGE_EXTS).stat().st_size > 1000)
+
+    def test_images_limited_to_own_tab(self):
+        import json
+        from unittest.mock import patch
+        from validate import ROOT
+        section_path = ROOT / 'content/diagramy/sections/sekcja-01.json'
+        original = json.loads(section_path.read_text(encoding='utf-8'))
+        modified = json.loads(json.dumps(original))
+        modified['images'][0]['src'] = 'content/other/sections/images/test.jpg'
+        from validate import check
+        from unittest.mock import patch
+        import validate
+        original_reader = validate.read_json
+        def reader(location):
+            if str(location).endswith('diagramy/sections/sekcja-01.json'):
+                return modified
+            return original_reader(location)
+        with patch('validate.read_json', side_effect=reader):
+            with self.assertRaisesRegex(ValueError, 'sections/images'):
+                check()
 
     def test_directory_traversal_rejected(self):
         with self.assertRaises(ValueError):
