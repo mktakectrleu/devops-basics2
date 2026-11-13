@@ -1,0 +1,14 @@
+{
+  "id": "sekcja-02",
+  "title": "02 · GitHub i CI/CD",
+  "summary": "Grafiki procesu publikacji.",
+  "images": [
+    {
+      "id": "pipeline",
+      "title": "Pipeline GitHub Actions",
+      "src": "assets/images/github-actions.jpg",
+      "alt": "Etapy GitHub Actions, testy, build i GitHub Pages",
+      "description": "Co dzieje się po git push na gałąź main."
+    }
+  ]
+}

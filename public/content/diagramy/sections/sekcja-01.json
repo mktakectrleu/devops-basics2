@@ -1,0 +1,21 @@
+{
+  "id": "sekcja-01",
+  "title": "01 · Środowisko lokalne",
+  "summary": "Architektura narzędzi i przepływ pracy.",
+  "images": [
+    {
+      "id": "architektura",
+      "title": "Architektura lokalna",
+      "src": "assets/images/architektura.jpg",
+      "alt": "Schemat Windows 11, WSL2, Docker, DDEV i przeglądarki",
+      "description": "Elementy lokalnego środowiska i przepływ żądań do DDEV."
+    },
+    {
+      "id": "cykl",
+      "title": "Cykl pracy programisty",
+      "src": "assets/images/cykl-pracy.jpg",
+      "alt": "Diagram edycja, testowanie, commit, push i publikacja",
+      "description": "Od edycji w VS Code do automatycznej publikacji."
+    }
+  ]
+}

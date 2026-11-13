@@ -1,0 +1,26 @@
+{
+  "title": "DevOps Basics 2",
+  "defaultPage": "lokalnie",
+  "pages": [
+    {
+      "id": "lokalnie",
+      "label": "DevOps - lokalnie",
+      "file": "content/lokalnie/page.json"
+    },
+    {
+      "id": "github",
+      "label": "DevOps - GitHub",
+      "file": "content/github/page.json"
+    },
+    {
+      "id": "vscode",
+      "label": "DevOps - VS Code",
+      "file": "content/vscode/page.json"
+    },
+    {
+      "id": "diagramy",
+      "label": "DevOps - grafiki",
+      "file": "content/diagramy/page.json"
+    }
+  ]
+}
