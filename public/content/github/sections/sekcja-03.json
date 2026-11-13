@@ -1,61 +1,155 @@
 {
   "id": "github-03",
-  "title": "03 · Codzienna praca i gałęzie",
-  "summary": "Zmiany w plikach JSON można zatwierdzać bez dotykania HTML/JS/CSS.",
+  "title": "03 · Codzienna praca, commity i gałęzie",
+  "summary": "Sprawdzanie zmian, lokalny commit, synchronizacja, branche i Pull Requesty.",
   "subsections": [
     {
-      "id": "regularnie",
-      "title": "Commit i synchronizacja",
+      "id": "t05-zmiany",
+      "title": "05 / Co zmieniło się od ostatniego commita",
       "commands": [
         {
           "command": "git status",
-          "description": "Pokazuje zmodyfikowane i nieśledzone pliki."
+          "description": "Pełny stan lokalnego repozytorium."
+        },
+        {
+          "command": "git status --short",
+          "description": "Krótka lista zmian (M, A, D, ??)."
         },
         {
           "command": "git diff",
-          "description": "Wyświetla niezapisane w commicie zmiany."
+          "description": "Pokazuje niezastageowane zmiany w śledzonych plikach."
         },
         {
-          "command": "git add public/content/",
-          "description": "Dodaje zmiany w dokumentacji JSON."
+          "command": "git diff --name-only",
+          "description": "Podaje nazwy zmienionych śledzonych plików."
         },
         {
-          "command": "git commit -m \"Aktualizacja instrukcji DDEV\"",
-          "description": "Zapisuje aktualizację dokumentacji."
-        },
-        {
-          "command": "git pull --ff-only",
-          "description": "Pobiera zmiany z GitHub bez tworzenia automatycznego merge commita."
-        },
-        {
-          "command": "git push",
-          "description": "Wysyła zmiany i uruchamia pipeline."
+          "command": "git diff --cached",
+          "description": "Pokazuje zmiany przygotowane już do commita."
         },
         {
           "command": "git log --oneline -8",
-          "description": "Pokazuje osiem ostatnich commitów."
+          "description": "Pokazuje osiem ostatnich lokalnych commitów."
+        },
+        {
+          "command": "git show --stat HEAD",
+          "description": "Podsumowuje pliki z ostatniego commita."
         }
       ]
     },
     {
-      "id": "branch",
-      "title": "Bezpieczne zmiany przez pull request",
+      "id": "t05-commit",
+      "title": "05 / Zapisanie zmian wyłącznie lokalnie",
       "commands": [
         {
-          "command": "git switch -c docs/nowa-sekcja",
-          "description": "Tworzy gałąź roboczą i przełącza na nią."
+          "command": "git add public/content/github/",
+          "description": "Dodaje wyłącznie zmiany w dokumentacji GitHub."
         },
         {
-          "command": "git push -u origin docs/nowa-sekcja",
-          "description": "Publikuje gałąź roboczą; następnie utwórz Pull Request w GitHub."
+          "command": "git add .",
+          "description": "Przygotowuje wszystkie nieignorowane zmiany z bieżącego katalogu."
         },
         {
-          "command": "git switch main",
-          "description": "Wraca na gałąź główną."
+          "command": "git diff --cached --check",
+          "description": "Wykrywa m.in. błędy białych znaków w zmianach przygotowanych do commita."
+        },
+        {
+          "command": "git commit -m \"Rozszerzenie dokumentacji GitHub\"",
+          "description": "Tworzy lokalny commit."
+        },
+        {
+          "command": "git status -sb",
+          "description": "Sprawdza, czy pozostają zmiany i czy gałąź jest ahead/behind."
+        },
+        {
+          "command": "git log origin/main..HEAD --oneline",
+          "description": "Pokazuje commity lokalne, których nie ma na origin/main (według ostatniego fetch)."
+        }
+      ]
+    },
+    {
+      "id": "t05-synchronizacja",
+      "title": "05 / GitHub a lokalne commity",
+      "commands": [
+        {
+          "command": "git fetch origin",
+          "description": "Aktualizuje informacje o gałęziach zdalnych bez zmiany plików roboczych."
+        },
+        {
+          "command": "git status -sb",
+          "description": "Po fetch pokazuje, czy jesteś ahead/behind względem upstream."
         },
         {
           "command": "git pull --ff-only",
-          "description": "Aktualizuje main po zaakceptowanym Pull Request."
+          "description": "Pobiera i aktualizuje bieżącą gałąź tylko, gdy możliwy jest fast-forward."
+        },
+        {
+          "command": "git push",
+          "description": "Wysyła lokalne commity na powiązaną gałąź zdalną."
+        },
+        {
+          "command": "git push --dry-run origin main",
+          "description": "Symuluje push bez wysłania commitów; nie jest pełnym testem uprawnień zapisu."
+        }
+      ]
+    },
+    {
+      "id": "t06-branch",
+      "title": "06 / Podstawowe gałęzie",
+      "commands": [
+        {
+          "command": "git branch",
+          "description": "Pokazuje lokalne gałęzie; gwiazdka oznacza aktywną."
+        },
+        {
+          "command": "git branch -a",
+          "description": "Pokazuje lokalne i zdalne gałęzie."
+        },
+        {
+          "command": "git switch -c docs/github-ssh",
+          "description": "Tworzy nową gałąź roboczą i na nią przełącza."
+        },
+        {
+          "command": "git switch main",
+          "description": "Wraca na main; upewnij się, że zmiany robocze są bezpieczne."
+        },
+        {
+          "command": "git branch -m nowa-nazwa",
+          "description": "Zmienia nazwę aktualnej gałęzi, o ile docelowa nie istnieje."
+        },
+        {
+          "command": "git push -u origin docs/github-ssh",
+          "description": "Wysyła gałąź roboczą i ustawia upstream."
+        },
+        {
+          "command": "git branch -d docs/github-ssh",
+          "description": "Usuwa lokalną gałąź po bezpiecznym scaleniu."
+        }
+      ]
+    },
+    {
+      "id": "t06-pr",
+      "title": "06 / Pull Request przez GitHub CLI",
+      "commands": [
+        {
+          "command": "gh pr create --base main --head docs/github-ssh --fill",
+          "description": "Tworzy Pull Request do main, korzystając z danych commitów; wymaga uwierzytelnionego gh."
+        },
+        {
+          "command": "gh pr status",
+          "description": "Pokazuje status Pull Requestów związanych z bieżącym repozytorium."
+        },
+        {
+          "command": "gh pr checks",
+          "description": "Pokazuje wyniki testów dla powiązanego Pull Request."
+        },
+        {
+          "command": "gh pr view --web",
+          "description": "Otwiera bieżący Pull Request w przeglądarce."
+        },
+        {
+          "command": "git switch main && git pull --ff-only",
+          "description": "Aktualizuje main po scaleniu PR, jeśli nie ma konfliktów i zmian blokujących operację."
         }
       ]
     }

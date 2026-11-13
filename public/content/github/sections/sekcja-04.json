@@ -1,43 +1,275 @@
 {
   "id": "github-04",
-  "title": "04 · Rozwiązywanie problemów",
-  "summary": "Publikacja następuje po zielonym workflow i ustawieniu GitHub Pages na GitHub Actions.",
+  "title": "04 · GitHub Actions, Pages, diagnostyka i bezpieczeństwo",
+  "summary": "Automatyczna publikacja, katalog dist, błędy SSH/Git/Pages, bezpieczeństwo projektu.",
   "subsections": [
     {
-      "id": "diagnostyka",
-      "title": "Testy i diagnostyka",
+      "id": "t07-lokalnie",
+      "title": "07 / Sprawdzenie przed wysłaniem",
       "commands": [
         {
-          "command": "python3 -m unittest discover -s tests -v",
-          "description": "Uruchamia testy projektu lokalnie."
+          "command": "python3 scripts/validate.py",
+          "description": "Waliduje strukturę JSON i powiązania treści oraz grafik."
         },
         {
-          "command": "python3 -m http.server 8000 --directory public",
-          "description": "Uruchamia alternatywny serwer statyczny bez DDEV."
+          "command": "python3 -m unittest discover -s tests -v",
+          "description": "Uruchamia testy projektu."
+        },
+        {
+          "command": "python3 scripts/build.py",
+          "description": "Tworzy lokalny katalog dist/ z kopią public/; usuwa poprzedni dist/."
+        },
+        {
+          "command": "ls -lah dist/",
+          "description": "Pokazuje rezultat lokalnego budowania."
+        },
+        {
+          "command": "git check-ignore -v dist/",
+          "description": "Sprawdza, czy dist/ jest wykluczony z repozytorium."
         },
         {
           "command": "ddev start",
-          "description": "Uruchamia witrynę lokalnie pod adresem DDEV."
+          "description": "Uruchamia środowisko lokalne bez budowania dist/."
         },
         {
           "command": "ddev launch",
-          "description": "Otwiera stronę w przeglądarce."
+          "description": "Otwiera lokalną stronę korzystającą z public/."
+        }
+      ]
+    },
+    {
+      "id": "t07-actions",
+      "title": "07 / Uruchomienia pipeline",
+      "commands": [
+        {
+          "command": "gh run list --limit 10",
+          "description": "Pokazuje ostatnie wykonania GitHub Actions; wymaga gh."
         },
         {
-          "command": "git remote -v",
-          "description": "Pokazuje URL repozytorium zdalnego."
-        },
-        {
-          "command": "git branch -vv",
-          "description": "Pokazuje gałęzie i ich powiązania ze zdalnym repozytorium."
-        },
-        {
-          "command": "gh run list --limit 5",
-          "description": "Pokazuje ostatnie uruchomienia GitHub Actions (wymaga gh)."
+          "command": "gh run view --log-failed",
+          "description": "Wyświetla logi nieudanych kroków wybranego wykonania."
         },
         {
           "command": "gh run watch",
-          "description": "Śledzi działanie bieżącego workflow (wymaga gh)."
+          "description": "Obserwuje uruchomienie workflow w terminalu."
+        },
+        {
+          "command": "gh run rerun RUN_ID",
+          "description": "Ponownie uruchamia wskazane wykonanie; podstaw rzeczywisty RUN_ID."
+        },
+        {
+          "command": "git push",
+          "description": "Wysyła commit na main; workflow publikacji uruchomi się zgodnie z konfiguracją pages.yml."
+        }
+      ]
+    },
+    {
+      "id": "t07-pages",
+      "title": "07 / Ustawienia GitHub Pages (kroki w przeglądarce)",
+      "commands": [
+        {
+          "command": "gh repo view --web",
+          "description": "Otwiera repozytorium; w Settings → Pages ustaw Source = GitHub Actions."
+        },
+        {
+          "command": "gh api repos/WLASCICIEL/devops-basics-2/pages",
+          "description": "Sprawdza konfigurację Pages przez API; 404 może oznaczać niewłączoną stronę lub brak uprawnień."
+        },
+        {
+          "command": "gh api repos/WLASCICIEL/devops-basics-2/actions/permissions",
+          "description": "Odczytuje ustawienia GitHub Actions repozytorium, jeśli konto ma odpowiedni dostęp."
+        }
+      ]
+    },
+    {
+      "id": "t07-runner",
+      "title": "07 / Wersje runnera i akcji",
+      "commands": [
+        {
+          "command": "grep -Rni \"runs-on:\" .github/workflows/",
+          "description": "Sprawdza obrazy runnerów, np. ubuntu-24.04, ubuntu-26.04 lub ubuntu-latest."
+        },
+        {
+          "command": "grep -Rni \"uses:\" .github/workflows/",
+          "description": "Pokazuje wersje używanych akcji; starsze mogą zgłaszać ostrzeżenia o Node.js 20."
+        },
+        {
+          "command": "git diff -- .github/workflows/",
+          "description": "Przegląda lokalne poprawki plików workflow przed wysłaniem."
+        }
+      ]
+    },
+    {
+      "id": "t08-nie-ma-repo",
+      "title": "08 / Repository not found / Could not read from remote repository",
+      "commands": [
+        {
+          "command": "ssh -T git@github.com",
+          "description": "Sprawdza, czy GitHub rozpoznaje klucz i jakie konto uwierzytelnia."
+        },
+        {
+          "command": "git remote -v",
+          "description": "Sprawdza dokładną nazwę właściciela i repozytorium w URL."
+        },
+        {
+          "command": "git ls-remote origin",
+          "description": "Weryfikuje repozytorium, jego istnienie i dostęp do odczytu."
+        },
+        {
+          "command": "git remote set-url origin git@github.com:WLASCICIEL/devops-basics-2.git",
+          "description": "Poprawia nieprawidłowy URL, jeżeli origin istnieje."
+        },
+        {
+          "command": "ssh -vT git@github.com",
+          "description": "Diagnozuje oferowanie i przyjmowanie klucza SSH."
+        }
+      ]
+    },
+    {
+      "id": "t08-credentials",
+      "title": "08 / Username/password, slow_down i dostęp przez HTTPS",
+      "commands": [
+        {
+          "command": "git remote -v",
+          "description": "Jeżeli URL zaczyna się od https://, Git może pytać o poświadczenia."
+        },
+        {
+          "command": "gh auth status",
+          "description": "Sprawdza odrębną sesję GitHub CLI."
+        },
+        {
+          "command": "gh api user --jq .login",
+          "description": "Wypisuje aktywne konto gh; nie określa konta SSH."
+        },
+        {
+          "command": "git config --show-origin --get-all credential.helper",
+          "description": "Pokazuje skonfigurowane helpery poświadczeń HTTPS."
+        },
+        {
+          "command": "gh auth setup-git",
+          "description": "Ustawia uwierzytelnianie HTTPS przez gh; nie jest potrzebne dla SSH."
+        },
+        {
+          "command": "ssh -T git@github.com",
+          "description": "Przy błędzie OAuth slow_down możesz nadal korzystać z Git przez działające SSH."
+        }
+      ]
+    },
+    {
+      "id": "t08-pages-404",
+      "title": "08 / Pages: HttpError Not Found",
+      "commands": [
+        {
+          "command": "gh repo view --web",
+          "description": "Otwiera repozytorium; w Settings → Pages włącz Source: GitHub Actions."
+        },
+        {
+          "command": "gh run list --limit 5",
+          "description": "Sprawdza historię wykonań po włączeniu Pages."
+        },
+        {
+          "command": "gh run view --log-failed",
+          "description": "Pokazuje błąd konkretnego joba publikacji."
+        },
+        {
+          "command": "grep -Rni \"pages: write|id-token: write|contents: read\" .github/workflows/",
+          "description": "Pomaga zweryfikować uprawnienia wymagane przez workflow Pages."
+        }
+      ]
+    },
+    {
+      "id": "t08-brak-zmian",
+      "title": "08 / Gdy VS Code nie pokazuje zmian Git",
+      "commands": [
+        {
+          "command": "pwd",
+          "description": "Sprawdza katalog terminala w VS Code."
+        },
+        {
+          "command": "git rev-parse --show-toplevel",
+          "description": "Potwierdza, że otwarto repozytorium, nie tylko podfolder public/."
+        },
+        {
+          "command": "git status --short",
+          "description": "Sprawdza zmiany niezależnie od interfejsu VS Code."
+        },
+        {
+          "command": "git status -sb",
+          "description": "Pokazuje także lokalne commity oczekujące na push."
+        },
+        {
+          "command": "git log --oneline -5",
+          "description": "Pokazuje ostatnie commity, gdy panel Changes jest pusty."
+        },
+        {
+          "command": "code .",
+          "description": "Otwiera projekt w VS Code z terminala WSL2; wymaga integracji WSL."
+        }
+      ]
+    },
+    {
+      "id": "t09-pliki",
+      "title": "09 / Co przechowywać w repozytorium",
+      "commands": [
+        {
+          "command": "git ls-files .github .ddev .vscode public scripts tests README.md",
+          "description": "Pokazuje śledzone pliki aplikacji i konfiguracji deweloperskiej."
+        },
+        {
+          "command": "git check-ignore -v dist/",
+          "description": "Sprawdza ignorowanie wyniku builda."
+        },
+        {
+          "command": "git status --ignored --short",
+          "description": "Pokazuje także ignorowane pliki; sprawdź, czy nic ważnego nie trafiło do indeksu."
+        },
+        {
+          "command": "git diff --cached --name-only",
+          "description": "Sprawdza przygotowaną listę plików przed commitem."
+        },
+        {
+          "command": "git ls-files | grep -E \"(^|/)(\\.env|id_ed25519|id_rsa)(\\.|$)|\\.(pem|key)$\"",
+          "description": "Wyszukuje podejrzane nazwy śledzonych plików; wynik należy ręcznie zweryfikować."
+        }
+      ]
+    },
+    {
+      "id": "t09-ochrona",
+      "title": "09 / Uwierzytelnianie i uprawnienia",
+      "commands": [
+        {
+          "command": "ssh-add -l",
+          "description": "Sprawdza, czy agent dysponuje kluczami bez ujawniania prywatnej zawartości."
+        },
+        {
+          "command": "git config user.email",
+          "description": "Sprawdza e-mail autora commitów, nie tożsamość uwierzytelnionego GitHub."
+        },
+        {
+          "command": "gh auth status",
+          "description": "Sprawdza aktywną sesję CLI; klucze SSH są odrębne."
+        },
+        {
+          "command": "git remote -v",
+          "description": "Sprawdza, czy repozytorium wskazuje oczekiwany adres przed push."
+        }
+      ]
+    },
+    {
+      "id": "t09-aktualizacje",
+      "title": "09 / Kontrola konfiguracji automatyzacji",
+      "commands": [
+        {
+          "command": "ls .github/workflows/",
+          "description": "Pokazuje workflow CI i GitHub Pages."
+        },
+        {
+          "command": "grep -Rni \"uses:\" .github/workflows/",
+          "description": "Wyszukuje wersje zewnętrznych akcji do regularnego przeglądu."
+        },
+        {
+          "command": "git status -sb",
+          "description": "Sprawdza stan zmian przed aktualizacją konfiguracji CI/CD."
         }
       ]
     }

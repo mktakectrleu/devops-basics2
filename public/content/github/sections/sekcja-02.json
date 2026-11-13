@@ -1,53 +1,181 @@
 {
   "id": "github-02",
-  "title": "02 · Pierwsza publikacja projektu",
-  "summary": "Przygotuj repozytorium, wyślij kod do gałęzi main i ustaw GitHub Pages: Source = GitHub Actions.",
+  "title": "02 · GitHub CLI i pierwsza publikacja",
+  "summary": "Logowanie gh, tworzenie repozytorium, łączenie origin przez SSH oraz pierwszy push.",
   "subsections": [
     {
-      "id": "inicjalizacja",
-      "title": "Repozytorium lokalne",
+      "id": "t03-gh-auth",
+      "title": "03 / CLI i konto",
       "commands": [
         {
-          "command": "cd ~/projekty/devops-basics",
-          "description": "Przechodzi do projektu w WSL2."
+          "command": "gh --version",
+          "description": "Sprawdza obecność GitHub CLI."
         },
         {
-          "command": "git init -b main",
-          "description": "Tworzy repozytorium Git i ustawia gałąź main."
+          "command": "sudo apt update && sudo apt install gh -y",
+          "description": "Instaluje GitHub CLI z dostępnych repozytoriów Ubuntu (wersja zależy od repozytorium)."
         },
         {
-          "command": "git add .",
-          "description": "Dodaje wszystkie nieignorowane pliki do commita."
+          "command": "gh auth status",
+          "description": "Sprawdza uwierzytelnienie GitHub CLI."
         },
         {
-          "command": "git commit -m \"Start projektu DevOps Ściąga\"",
-          "description": "Zapisuje pierwszą wersję projektu."
+          "command": "gh api user --jq .login",
+          "description": "Wyświetla konto używane przez GitHub CLI; wymaga zalogowania gh."
         },
         {
-          "command": "git remote add origin https://github.com/NAZWA_UZYTKOWNIKA/devops-basics.git",
-          "description": "Łączy z repozytorium GitHub, które wcześniej utworzono jako PUSTE (bez README)."
+          "command": "gh auth login",
+          "description": "Uruchamia logowanie gh; przy błędzie slow_down ogranicz kolejne próby."
         },
         {
-          "command": "git push -u origin main",
-          "description": "Wysyła main i ustawia śledzenie gałęzi zdalnej."
+          "command": "gh auth logout --hostname github.com",
+          "description": "Usuwa lokalne uwierzytelnienie GitHub CLI dla GitHub.com; nie usuwa kluczy SSH."
+        },
+        {
+          "command": "gh config set git_protocol ssh --host github.com",
+          "description": "Ustawia preferowany protokół GitHub CLI na SSH; nie zmienia istniejącego origin."
+        },
+        {
+          "command": "gh auth setup-git",
+          "description": "Konfiguruje helper uwierzytelniania Gita przez gh dla HTTPS; przy SSH nie jest potrzebne."
         }
       ]
     },
     {
-      "id": "deploy",
-      "title": "Automatyczne wdrażanie",
+      "id": "t03-utworzenie",
+      "title": "03 / Tworzenie repozytorium przez CLI",
       "commands": [
         {
-          "command": "python3 scripts/validate.py",
-          "description": "Sprawdza składnię JSON, strukturę treści i wymagane pliki."
+          "command": "gh repo create devops-basics-2 --public --source=. --remote=origin --push",
+          "description": "Tworzy publiczne repozytorium z katalogu i wysyła commity; wymaga zalogowanego gh, commita i braku origin."
         },
         {
-          "command": "python3 scripts/build.py",
-          "description": "Tworzy katalog dist/ zawierający tylko publiczne pliki witryny."
+          "command": "gh repo create devops-basics-2 --private --source=. --remote=origin --push",
+          "description": "Jak wyżej, ale tworzy repozytorium prywatne; sprawdź dostępność Pages dla planu."
         },
         {
-          "command": "git push",
-          "description": "Uruchamia na GitHub testy i automatyczną publikację po zmianach w main."
+          "command": "gh repo create devops-basics-2 --public",
+          "description": "Tworzy zdalne repozytorium bez automatycznego dodania remote i bez push."
+        },
+        {
+          "command": "gh repo view --web",
+          "description": "Otwiera stronę bieżącego repozytorium w przeglądarce."
+        },
+        {
+          "command": "gh repo view --json nameWithOwner,visibility,url",
+          "description": "Pokazuje nazwę z właścicielem, widoczność i URL repozytorium."
+        }
+      ]
+    },
+    {
+      "id": "t03-slowdown",
+      "title": "03 / Gdy logowanie przez przeglądarkę zwraca slow_down",
+      "commands": [
+        {
+          "command": "gh auth status",
+          "description": "Najpierw sprawdza, czy logowanie nie zostało już zakończone poprawnie."
+        },
+        {
+          "command": "ssh -T git@github.com",
+          "description": "Sprawdza SSH niezależnie od gh; push i pull przez SSH mogą działać bez gh."
+        },
+        {
+          "command": "git remote -v",
+          "description": "Potwierdza, czy projekt rzeczywiście korzysta z SSH, a nie HTTPS."
+        }
+      ]
+    },
+    {
+      "id": "t04-repo",
+      "title": "04 / Przygotowanie lokalnego repozytorium",
+      "commands": [
+        {
+          "command": "cd ~/projekty/devops-basics-2",
+          "description": "Przechodzi do projektu."
+        },
+        {
+          "command": "git status",
+          "description": "Pokazuje stan Git lub informuje, że katalog nie jest repozytorium."
+        },
+        {
+          "command": "git init -b main",
+          "description": "Inicjalizuje Git z gałęzią main — wykonaj wyłącznie gdy repo jeszcze nie istnieje."
+        },
+        {
+          "command": "git branch --show-current",
+          "description": "Sprawdza aktywną gałąź."
+        },
+        {
+          "command": "git branch -m main",
+          "description": "Zmienia nazwę bieżącej gałęzi na main bez wymuszonego nadpisywania istniejącej."
+        },
+        {
+          "command": "git add .",
+          "description": "Przygotowuje wszystkie nieignorowane zmiany do commita."
+        },
+        {
+          "command": "git diff --cached --stat",
+          "description": "Podsumowuje zmiany przygotowane do commita."
+        },
+        {
+          "command": "git commit -m \"Pierwsza wersja DevOps Basics 2\"",
+          "description": "Zapisuje lokalny commit; nie wysyła niczego na GitHub."
+        }
+      ]
+    },
+    {
+      "id": "t04-zdalne",
+      "title": "04 / Powiązanie z istniejącym repozytorium",
+      "commands": [
+        {
+          "command": "git remote -v",
+          "description": "Sprawdza, czy origin już jest ustawiony."
+        },
+        {
+          "command": "git remote add origin git@github.com:WLASCICIEL/devops-basics-2.git",
+          "description": "Dodaje origin SSH, jeżeli jeszcze nie istnieje."
+        },
+        {
+          "command": "git remote set-url origin git@github.com:WLASCICIEL/devops-basics-2.git",
+          "description": "Poprawia URL istniejącego origin, np. po błędzie Repository not found."
+        },
+        {
+          "command": "git ls-remote origin",
+          "description": "Testuje istnienie repozytorium i dostęp do odczytu."
+        },
+        {
+          "command": "git push -u origin main",
+          "description": "Wysyła gałąź main i ustawia upstream origin/main; wymaga prawa zapisu."
+        },
+        {
+          "command": "git branch -vv",
+          "description": "Potwierdza upstream, np. [origin/main]."
+        }
+      ]
+    },
+    {
+      "id": "t04-bezpieczenstwo",
+      "title": "04 / Kontrola przed pierwszym wysłaniem",
+      "commands": [
+        {
+          "command": "git status --short",
+          "description": "Pokazuje listę plików dodanych/zmodyfikowanych/usuniętych."
+        },
+        {
+          "command": "git diff --cached --name-only",
+          "description": "Pokazuje, jakie pliki znajdą się w commicie."
+        },
+        {
+          "command": "git check-ignore -v dist/",
+          "description": "Sprawdza, czy generowany katalog dist/ jest ignorowany."
+        },
+        {
+          "command": "git ls-files",
+          "description": "Wypisuje wszystkie pliki śledzone przez Git."
+        },
+        {
+          "command": "git remote -v",
+          "description": "Sprawdza adres przed pierwszym push na właściwe konto lub organizację."
         }
       ]
     }

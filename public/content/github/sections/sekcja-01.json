@@ -1,53 +1,195 @@
 {
   "id": "github-01",
-  "title": "01 · Git i konto GitHub",
-  "summary": "Podstawowe polecenia w Ubuntu WSL2; zamień NAZWA_UZYTKOWNIKA na swój login GitHub.",
+  "title": "01 · Git, konto i klucze SSH",
+  "summary": "Konfiguracja Git, właściciel repozytorium, identyfikacja konta i klucze SSH w WSL2.",
   "subsections": [
     {
-      "id": "przygotowanie",
-      "title": "Sprawdzenie i konfiguracja Git",
+      "id": "t01-narzedzia",
+      "title": "01 / Instalacja i ustawienia",
       "commands": [
         {
           "command": "git --version",
-          "description": "Sprawdza, czy Git jest zainstalowany."
+          "description": "Sprawdza wersję Git w Ubuntu."
         },
         {
-          "command": "git config --global user.name \"Twoje imię i nazwisko\"",
-          "description": "Ustawia podpis autora commitów."
+          "command": "sudo apt update && sudo apt install git -y",
+          "description": "Instaluje Git z repozytorium Ubuntu, jeżeli go brakuje."
         },
         {
-          "command": "git config --global user.email \"twoj-email@example.com\"",
-          "description": "Ustawia adres autora commitów (najlepiej zweryfikowany na GitHub)."
+          "command": "git config --global user.name \"Imię Nazwisko\"",
+          "description": "Ustawia autora nowych commitów; nie loguje do GitHub."
+        },
+        {
+          "command": "git config --global user.email \"adres@example.com\"",
+          "description": "Ustawia e-mail autora commitów; można wykorzystać adres GitHub noreply."
+        },
+        {
+          "command": "git config --global init.defaultBranch main",
+          "description": "Ustawia main jako domyślną gałąź nowych repozytoriów."
         },
         {
           "command": "git config --global --list",
-          "description": "Wyświetla aktywną konfigurację Git."
+          "description": "Pokazuje ustawienia Git użytkownika."
         },
         {
-          "command": "git status",
-          "description": "Pokazuje zmiany w bieżącym repozytorium."
+          "command": "git config --show-origin --get user.email",
+          "description": "Pokazuje e-mail autora oraz plik, z którego pochodzi ustawienie."
+        },
+        {
+          "command": "git config --local user.name \"Imię Nazwisko\"",
+          "description": "Ustawia autora tylko dla bieżącego repozytorium."
         }
       ]
     },
     {
-      "id": "gh",
-      "title": "GitHub CLI (opcjonalnie)",
+      "id": "t01-lokalizacja",
+      "title": "01 / Rozpoznanie bieżącego repozytorium",
       "commands": [
         {
-          "command": "gh --version",
-          "description": "Sprawdza, czy GitHub CLI jest dostępny."
+          "command": "cd ~/projekty/devops-basics-2",
+          "description": "Przechodzi do przykładowego katalogu projektu w WSL2."
         },
         {
-          "command": "gh auth login",
-          "description": "Uruchamia logowanie do GitHub; wybierz GitHub.com, HTTPS i logowanie przeglądarką."
+          "command": "pwd",
+          "description": "Pokazuje bieżący katalog."
         },
         {
-          "command": "gh auth status",
-          "description": "Sprawdza, na jakie konto zalogowano GitHub CLI."
+          "command": "git rev-parse --show-toplevel",
+          "description": "Pokazuje katalog główny lokalnego repozytorium Git."
         },
         {
-          "command": "gh repo create devops-basics --public --source=. --remote=origin --push",
-          "description": "Tworzy publiczne repozytorium i wysyła aktualną gałąź; wykonaj po pierwszym commicie, tylko jeżeli repo jeszcze nie istnieje."
+          "command": "git status -sb",
+          "description": "Pokazuje gałąź, śledzoną gałąź zdalną oraz skrócony stan plików."
+        },
+        {
+          "command": "git branch --show-current",
+          "description": "Wyświetla nazwę bieżącej gałęzi."
+        },
+        {
+          "command": "git branch -a",
+          "description": "Wyświetla gałęzie lokalne i gałęzie zdalne znane lokalnie."
+        }
+      ]
+    },
+    {
+      "id": "t01-remote",
+      "title": "01 / Adres repozytorium i właściciel",
+      "commands": [
+        {
+          "command": "git remote -v",
+          "description": "Pokazuje adresy fetch/push; login w adresie to właściciel repozytorium, niekoniecznie konto uwierzytelnione."
+        },
+        {
+          "command": "git remote get-url origin",
+          "description": "Wyświetla URL głównego zdalnego repozytorium."
+        },
+        {
+          "command": "git ls-remote origin",
+          "description": "Sprawdza odczyt z repozytorium; dla publicznego repo może działać anonimowo."
+        },
+        {
+          "command": "git branch -vv",
+          "description": "Pokazuje lokalne gałęzie, upstream i ostatnie commity."
+        },
+        {
+          "command": "git remote set-url origin git@github.com:WLASCICIEL/devops-basics-2.git",
+          "description": "Zmienia istniejące origin na adres SSH; podstaw rzeczywistego właściciela."
+        },
+        {
+          "command": "git remote add origin git@github.com:WLASCICIEL/devops-basics-2.git",
+          "description": "Dodaje origin tylko wtedy, gdy jeszcze go nie ma."
+        }
+      ]
+    },
+    {
+      "id": "t02-klucze",
+      "title": "02 / Przegląd kluczy SSH",
+      "commands": [
+        {
+          "command": "ls -lah ~/.ssh/",
+          "description": "Wyświetla lokalne pliki SSH; *.pub to klucze publiczne."
+        },
+        {
+          "command": "ssh-keygen -lf ~/.ssh/id_ed25519.pub",
+          "description": "Pokazuje typ, fingerprint i komentarz wskazanego klucza publicznego."
+        },
+        {
+          "command": "for key in ~/.ssh/*.pub; do [ -f \"$key\" ] && ssh-keygen -lf \"$key\"; done",
+          "description": "Wyświetla odciski wszystkich kluczy publicznych w ~/.ssh."
+        },
+        {
+          "command": "test -f ~/.ssh/config && cat ~/.ssh/config",
+          "description": "Pokazuje przypisania Host, User i IdentityFile, jeśli plik config istnieje."
+        },
+        {
+          "command": "ssh -G github.com | grep -iE \"^(hostname|user|identityfile|identitiesonly) \"",
+          "description": "Pokazuje efektywną konfigurację SSH dla github.com."
+        },
+        {
+          "command": "ssh-keygen -t ed25519 -C \"opis-klucza\"",
+          "description": "Tworzy nowy klucz tylko jeśli go potrzebujesz; nie nadpisuj istniejących kluczy."
+        }
+      ]
+    },
+    {
+      "id": "t02-agent",
+      "title": "02 / Agent SSH",
+      "commands": [
+        {
+          "command": "ssh-add -l",
+          "description": "Pokazuje klucze załadowane do agenta; błąd może oznaczać brak agenta."
+        },
+        {
+          "command": "eval \"$(ssh-agent -s)\"",
+          "description": "Uruchamia agenta SSH i ustawia zmienne dla bieżącej powłoki."
+        },
+        {
+          "command": "ssh-add ~/.ssh/id_ed25519",
+          "description": "Ładuje klucz prywatny do agenta; może poprosić o passphrase."
+        },
+        {
+          "command": "ssh-add -D",
+          "description": "Usuwa wszystkie klucze z bieżącego agenta, ale nie usuwa plików z dysku."
+        },
+        {
+          "command": "ssh-agent -k",
+          "description": "Kończy agenta powiązanego z bieżącą powłoką; nie trzeba tego robić przed wsl --shutdown."
+        }
+      ]
+    },
+    {
+      "id": "t02-test",
+      "title": "02 / Test logowania i wskazanie klucza",
+      "commands": [
+        {
+          "command": "ssh -T git@github.com",
+          "description": "Weryfikuje konto rozpoznane przez GitHub; komunikat Hi ... potwierdza dostęp SSH (kod wyjścia 1 jest normalny)."
+        },
+        {
+          "command": "ssh -vT git@github.com",
+          "description": "W trybie diagnostycznym pokazuje oferowane i zaakceptowane klucze."
+        },
+        {
+          "command": "ssh -T -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 git@github.com",
+          "description": "Testuje konkretny klucz; dodatkowe ustawienia SSH mogą wpływać na wybór tożsamości."
+        },
+        {
+          "command": "chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_ed25519",
+          "description": "Ustawia restrykcyjne uprawnienia katalogu i prywatnego klucza w Ubuntu; dostosuj nazwę pliku."
+        }
+      ]
+    },
+    {
+      "id": "t02-rozroznienie",
+      "title": "02 / Co znaczy sukces SSH",
+      "commands": [
+        {
+          "command": "git remote -v",
+          "description": "Sprawdza, dokąd push trafia; prawidłowe SSH nie gwarantuje istnienia repozytorium."
+        },
+        {
+          "command": "git ls-remote origin",
+          "description": "Weryfikuje dostęp do wskazanego repozytorium (pusty wynik bez błędu może oznaczać puste repo)."
         }
       ]
     }

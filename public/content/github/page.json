@@ -1,9 +1,9 @@
 {
   "id": "github",
   "title": "DevOps - GitHub",
-  "heading": "Git, GitHub i automatyczna publikacja",
-  "subtitle": "Repozytorium · GitHub Actions · GitHub Pages · komendy z opisami",
-  "notice": "WAŻNE: GitHub Pages publikuje stronę publicznie. Nie umieszczaj w plikach JSON, HTML i Git haseł, tokenów, kluczy ani danych poufnych. Polecenia zawierają przykładowe nazwy i adresy.",
+  "heading": "Git, GitHub, SSH, Actions i Pages",
+  "subtitle": "WSL2 · klucze SSH · GitHub CLI · repozytoria · branch · commit · push · CI/CD · publikacja · diagnostyka",
+  "notice": "Komendy wykonuj w terminalu Ubuntu/WSL2 w katalogu projektu. Zastępuj WLASCICIEL rzeczywistą nazwą użytkownika lub organizacji. ssh -T sprawdza konto SSH, gh auth status sprawdza oddzielną sesję CLI, git remote -v pokazuje właściciela repozytorium. Nie publikuj kluczy prywatnych, tokenów ani haseł.",
   "sections": [
     "sections/sekcja-01.json",
     "sections/sekcja-02.json",
